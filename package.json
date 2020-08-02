@@ -21,5 +21,8 @@
     "pug": "^3.0.0",
     "svg-captcha": "^1.4.0",
     "uuid": "^8.2.0"
+  },
+  "devDependencies": {
+    "lodash": ">=4.17.19"
   }
 }
