@@ -1,0 +1,53 @@
+doctype html lang="es"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title New type of treatment
+	link(rel="stylesheet", href="../../../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../../../assets/css/styleA.css")
+	style.
+		span{
+			font-size:1.9rem;
+		}
+		input[type="text"]{
+			max-width: 200px;
+			border: 0px;
+			border-bottom-color: currentcolor;
+			border-bottom-style: none;
+			border-bottom-width: 0px;
+			border-bottom: 1px solid #606c76;
+			border-radius: 0;
+			padding: 0px;
+			padding-bottom: 0px;
+			height: 2.2rem;
+			font-size: 1.8rem;
+			margin-left: 7px;
+			padding-bottom: 5px;
+			margin-bottom: 5px;
+		}
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column.column-50
+					h2 Create a new type of treatment
+					form(method="POST", action="/admin-8E4145/treatments/newtypeoftreatment")
+						.container-field
+							span Name of treatment:
+							input(type="text" value="" name="title")
+						.container-field
+							span Description:
+							textarea(value="" name="description")
+						.container-field
+							span Price for childs:
+							input(type="text" value="" name="pricechild")
+						.container-field
+							span Price for adults:
+							input(type="text" value="" name="priceadult")
+						button(type="submit") Save
+							

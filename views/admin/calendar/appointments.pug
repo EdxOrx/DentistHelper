@@ -1,0 +1,51 @@
+doctype html lang="en"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Dental office
+	link(rel="stylesheet", href="../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../assets/css/styleA.css")
+	script(type="text/javascript", src="../../assets/js/fullcalendar/moment-with-locales.js")
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column
+					.content-container
+						.container-posts
+							if data.length > 0
+								table.table
+									thead
+										tr
+											th Date appointment
+											th Patient
+											th Age
+									tbody
+										- let treatments = data[0];
+										- let patients = data[1];
+										- let types = data[2];
+										- let appointments = data[3];
+										each appointment in appointments
+											tr
+											
+												each patient in patients
+													if (appointment.patientId).toString() == (patient._id).toString()
+														- let year = appointment.datetime.getFullYear();
+														- let month = appointment.datetime.getMonth() + 1;
+														- let day = appointment.datetime.getUTCDate();
+														td
+															a(href="/admin-8E4145/calendar/appointment/edit/"+appointment._id)  #{day+"/"+month+"/"+year}
+														td #{patient.firstname + " "+ patient.lastname}
+														- let date = Date.now() - new Date(patient.birthday).getTime();
+														- let age = new Date(date);
+														- let age1 = Math.abs(age.getUTCFullYear()-1970);
+														td #{age1}
+											
+							else
+								h2(style="text-align:center;margin-top:40px;") You don't have any appointment
+	script.

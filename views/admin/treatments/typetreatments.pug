@@ -1,0 +1,54 @@
+doctype html lang="es"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Type of treaments
+	link(rel="stylesheet", href="../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../assets/css/styleA.css")
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column
+					.content-container
+						.action-buttons
+							a.link-button(href="/admin-8E4145/treatments/newtreatment")
+								i.ni.ni-fat-add
+								| Add new treatment
+							a.link-button(href="/admin-8E4145/treatments/newtypeoftreatment", style="float:right")
+								i.ni.ni-fat-add
+								| Add new type of treatment
+							a.link-button(href="/admin-8E4145/treatments/typeoftreatments", style="float:right")
+								| Types of treatmens
+						.container-posts
+							//- #{data}
+							if data.length > 0
+								table.table
+									thead
+										tr
+											th Type of treatment
+											th Description 	
+											th Price for childs
+											th Price for adults
+									tbody
+										
+										each treatment in data
+											tr
+												td
+													a(href="/admin-8E4145/treatments/typeoftreatments/edit/"+treatment.id) #{treatment.title}
+												td #{treatment.description}
+												td #{treatment.priceChild}
+												td #{treatment.priceAdult}
+
+											
+							else if err
+								h2(style="text-align:center;margin-top:40px;") #{err}
+							else
+								h2(style="text-align:center;margin-top:40px;") You don't have any treatments
+	script.
+		

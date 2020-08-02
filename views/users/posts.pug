@@ -1,0 +1,28 @@
+doctype html
+head
+	meta(charset='UTF-8')
+	meta(name='viewport' content='width=device-width,initial-scale=1')
+	meta(http-equiv='X-UA-Compatible' content='ie=edge')
+	title Dental office
+	link(rel='stylesheet' href='../../assets/css/reset.css')
+	link(rel='stylesheet' href='../../assets/css/normalize.css')
+	link(rel='stylesheet' href='../../assets/css/milligram.css')
+	link(rel='stylesheet' href='../../assets/css/header.css')
+	link(rel='stylesheet' href='../../assets/css/style.css')
+	meta(name='description', content='Dental office')
+	meta(name='author' content='Dr. John Doe')
+	include ./partials/header.pug
+	main.main
+		section.container
+			.row
+				.column
+					.post-container
+						each post in data
+							.single-post
+								h2.title-post
+									a.title-post-link(href="/noticias/"+post._id) #{post.title}
+								div.image-container
+									img.poster-post(src="/posts/images/"+post.poster alt="")
+								p.content-post #{post.description}
+								a(href="/noticias/"+post._id)
+									button.button-clear.read-more Read more

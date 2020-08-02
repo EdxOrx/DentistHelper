@@ -1,0 +1,335 @@
+doctype html lang="en"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Calendar
+	link(rel="stylesheet", href="../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../assets/css/styleA.css")
+	style.
+		.fc-col-header{
+			margin:0;
+		}
+		.swal2-progress-step-line{
+			margin-bottom:1rem !important;
+		}
+		.swal2-title{
+			margin-bottom: 2rem !important;
+		}
+		.swal2-actions button{
+			line-height: 0;
+		}
+		#grudus-clock{
+			position: fixed;
+			z-index: 1100;
+		}
+		.list-user{
+			border:1px solid #000;
+			max-height: 400px;
+			overflow: auto;
+		}
+		.patientavailable,.treatmentavailable{
+			border-bottom: 1px solid #000;
+			cursor: pointer;
+			margin-bottom:0;
+		}
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column
+					.content-container
+						#calendar
+						
+	link(rel='stylesheet', href="../../assets/js/fullcalendar/main.min.css")
+	script(type='text/javascript', src="../../assets/js/fullcalendar/main.min.js")
+	script(type='text/javascript', src="../../assets/js/fullcalendar/locale-es.js")
+	link(rel='stylesheet' href='../../assets/js/fullcalendar/sweetalert2.min.css')
+	script(type="text/javascript", src="../../assets/js/fullcalendar/sweetalert2.min.js")
+	script(type="text/javascript", src="../../assets/js/fullcalendar/moment-with-locales.js")
+	script(type="text/javascript", src="../../assets/js/fullcalendar/jquery.js")
+	script(type="text/javascript", src="../../assets/js/timepicker/timepicker.js")
+	link(rel='stylesheet' href='../../assets/js/timepicker/index.css')
+	script.
+
+		var thisHost = window.location.href.split('/').slice(0, 3).join('/');
+		function darkPicker() {
+			Timepicker.showPicker({
+				time: {"hours": 3, "minutes": "05"},
+				headerBackground: '#424242',
+				headerColor: '#e0e0e0',
+				headerSelected: '#fafafa',
+				wrapperBackground: "#424242",
+				footerBackground: "#424242",
+				submitColor: "#F44336",
+				cancelColor: "#F44336",
+				clockBackground: "#424242",
+				clockItemColor: "#fafafa",
+				clockItemInnerColor: "#e0e0e0",
+				handColor: "#F44336",
+				onSubmit: (selected) => {
+					document.getElementById("time").value = selected.formatted();
+				}
+			});
+		}
+		function showError(error){
+			let containerPatients = document.getElementById('containerpatients');
+			if(status = "Error"){
+				containerPatients.innerText ="Hay un error:"+error;
+			}
+		}
+		function selectTreatment(event){
+			let temporalText = this.innerText;
+			let idPatient = this.getAttribute("data-idtreatment");
+			console.log(temporalText, idPatient);
+			document.getElementById("treatmentname").value = temporalText;
+			document.getElementById("treatmentid").value = idPatient;
+			document.getElementById('containertreatments').style.display = "none";
+		}
+		function reloadResultsTreatment(){
+			let treatments = document.querySelectorAll('.treatmentavailable');
+			for(let i = 0; i < treatments.length ; i++ ){
+				treatments[i].addEventListener('click', selectTreatment);
+			}
+		}
+		function getTreatmentName(id){
+			fetch( thisHost+'/admin-8E4145/calendar/newappointment/treatment', {
+				method:'POST',
+				body: JSON.stringify({id:id}),
+				headers:{
+					"Content-Type": "application/json"
+				}
+			})
+				.then( res => res.json() )
+				.then( item => {
+					console.log(item);
+					let containerTreatments = document.getElementById('containertreatments');
+					containerTreatments.style.display="block";
+					containerTreatments.innerHTML = "";
+					let length = Object.keys(item.successText).length;
+
+					let list=document.createElement('ul');
+					
+					list.className="list-user";
+					for(let i =0; i<length;i++){
+						let element=document.createElement('li');
+						element.className = 'treatmentavailable';
+						element.setAttribute('data-idtreatment', item.successText[i]['idtreatment']);
+						element.innerText = item.successText[i]['typeoftreatmenttitle']+" "+item.successText[i]['start'];
+						list.append(element);
+					}
+					containerTreatments.append(list);
+					reloadResultsTreatment();
+				})
+				.catch( err => showError(err) )
+		}
+		
+		function selectPatient(event){
+			let temporalText = this.innerText;
+			let idPatient = this.getAttribute("data-idpatient");
+			console.log(temporalText, idPatient);
+			document.getElementById("patientname").value = temporalText;
+			document.getElementById("patientid").value = idPatient;
+			document.getElementById('containerpatients').style.display = "none";
+			getTreatmentName(idPatient);
+		}
+		function reloadResults(){
+			let patients = document.querySelectorAll('.patientavailable');
+			for(let i = 0; i < patients.length ; i++ ){
+				patients[i].addEventListener('click', selectPatient);
+			}
+		}
+		
+		function getPatientName(event){
+			let name = event.explicitOriginalTarget.value;
+			if(name.length > 3){
+				fetch( thisHost+'/admin-8E4145/calendar/newappointment/name', {
+					method:'POST',
+					body: JSON.stringify({name}),
+					headers:{
+						"Content-Type": "application/json"
+					}
+				})
+					.then( res => res.json() )
+					.then( item => {
+						console.log(item);
+						let containerPatients = document.getElementById('containerpatients');
+						containerPatients.style.display="block";
+						containerPatients.innerHTML = "";
+						let length = item.successText.length;
+						
+						let list=document.createElement('ul');
+						
+						list.className="list-user";
+						for(let i =0; i<length;i++){
+							let element=document.createElement('li');
+							element.className = 'patientavailable';
+							element.setAttribute('data-idpatient', item.successText[i]['_id']);
+							element.innerText = item.successText[i]['firstname']+" "+item.successText[i]['lastname'];
+							list.append(element);
+						}
+						containerPatients.append(list);
+						
+						reloadResults();
+					})
+					.catch( err => showError(err) )
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+			var calendarEl = document.getElementById('calendar');
+
+			var calendar = new FullCalendar.Calendar(calendarEl, {
+				headerToolbar: {
+					left: 'prev,next today',
+					center: 'title',
+					right: 'dayGridMonth,timeGridWeek,timeGridDay'
+				},
+				eventDidMount: function(info) {
+					//- var tooltip = new Tooltip(info.el, {
+					//- title: info.event.extendedProps.description,
+					//- placement: 'top',
+					//- trigger: 'hover',
+					//- container: 'body'
+					//- });
+					console.log(info);
+					console.log(info.el);
+					console.log(info.event.extendedProps.description);
+				},
+				initialDate: Date.now(),
+				height: 'auto',
+				editable: true,
+				selectable: true,
+				selectMirror: true,
+				defaultTimedEventDuration: '01:00',
+				forceEventDuration: true,
+				select: function(arg) {
+					//- console.log(arg.start);
+					//- console.log(arg.end);
+					Swal.fire({
+						title:'Nueva cita',
+						customClass: 'bounceInDown',
+						showCancelButton: true,
+						confirmButtonText: "Confirm",
+						html: "<input type='text' id='patientname' onkeyup='getPatientName(event)' placeholder='Type the name of the patient' required/><div id='containerpatients' style='border: 1px solid #000;'></div><input type='hidden' id='patientid'><input type='text' id='treatmentname' onkeyup='getTreatmentName(event)' placeholder='Treatment name' required/><div id='containertreatments' style='border: 1px solid #000;'></div><input type='hidden' id='treatmentid'><select id='doctorname'><option value='5ef6806fcbabae161c1e5ce1'>Dr. John doe</option><option value='5ef77f71c37b482aa43670f1'>Dra. Sam Doe</option></select><input type='text' id='time'  placeholder='Appointment time'>",
+						preConfirm: () => {
+							return [
+							document.getElementById('patientname').value,
+							document.getElementById('patientid').value,
+							document.getElementById('treatmentid').value,
+							document.getElementById('doctorname').value,
+							document.getElementById('time').value
+							]
+						}
+					}).then((result) => {			
+						if (result.value) {
+							const answers = JSON.stringify(result.value)
+							Swal.fire({
+							title: 'All done!',
+							html: `
+								Your answers:
+								<pre><code>${answers}</code></pre>
+							`,
+							confirmButtonText: 'Lovely!'
+							});
+							let timeStr = result.value[4].split(':');
+							let argStart = arg.start;
+							let year =  moment(argStart).get('year');
+							let month = ("0"+(argStart.getMonth()+1)).slice(-2);
+							let day = ("0"+argStart.getDate()).slice(-2);
+							let dateStr =year+'-'+month+'-'+day;
+							let date = moment(dateStr);
+							let time = moment(timeStr, 'HH:mm')
+							let startDate = date.set({'hour':time.get('hour'), 'minute':time.get('minute')});
+							let finalDate = dateStr+"T"+result.value[4]+":00.000Z";
+							console.log(startDate);
+							console.log(finalDate);
+							let data = {
+								patientId:result.value[1],
+								userId:result.value[3],
+								treatmentId:result.value[2],
+								datetime:finalDate
+							}
+							fetch( thisHost+'/admin-8E4145/calendar/newappointment', {
+								method:'POST',
+								body: JSON.stringify(data),
+								headers:{
+									"Content-Type": "application/json"
+								}
+							})
+								.then( res => res.json() )
+								.then( item => {
+									console.log(item);
+									Swal.fire({
+										icon:"success",
+										title:"Appointment Saved successfully",
+										timer:1000
+									});
+									calendar.addEvent({
+										id : item.successText._id,
+										title: result.value[0],
+										start: finalDate,
+										allDay: false,
+										extendedProps: {
+											patientId: result.value[1],
+											patientName: result.value[0],
+											doctorId: result.value[2],
+											treatment: 'Clean teeth'
+										}
+									});
+									calendar.unselect()
+								})
+								.catch( err => {
+									Swal.fire({
+										icon:"error",
+										title:"Appointment not saved",
+										texto:"Try reloading the page.",
+									});
+								} )
+							
+							
+						}
+					})
+					//- console.log(arg);
+					//- var title = prompt('Event Title:');
+					//- if (title) {
+					//- 	calendar.addEvent({
+					//- 		title: title,
+					//- 		start: arg.start,
+					//- 		end: arg.end,
+					//- 		allDay: arg.allDay
+					//- 	})
+					//- }
+					//- calendar.unselect()
+				},
+				eventClick: function(info) {
+					console.log(info);
+					alert('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
+					alert('View: ' + info.view.type);
+					info.el.style.borderColor = 'red';
+				},
+				eventDrop: function (info) {
+					
+				},
+				//- eventMouseEnter: function(event,el,jsEvent,view){
+				//- 	console.log(event);
+				//- },
+				//- eventMouseLeave: function(event,el,jsEvent,view){
+				//- 	console.log(event);
+				//- },
+				businessHours: true,
+				dayMaxEvents: true, // allow "more" link when too many events
+				events: {
+					url:'/admin-8E4145/calendar/getappointments',
+					method: 'GET',
+					failure: function(){
+						console.log("error fetch")
+					}
+				}
+			});
+			calendar.render();
+		});

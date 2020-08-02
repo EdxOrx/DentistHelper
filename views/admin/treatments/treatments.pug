@@ -1,0 +1,63 @@
+doctype html lang="en"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Treatments
+	link(rel="stylesheet", href="../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../assets/css/styleA.css")
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column
+					.content-container
+						.action-buttons
+							a.link-button(href="/admin-8E4145/treatments/newtreatment")
+								i.ni.ni-fat-add
+								| Add new treatment
+							a.link-button(href="/admin-8E4145/treatments/newtypeoftreatment", style="float:right")
+								i.ni.ni-fat-add
+								| Add new type of treatment
+							a.link-button(href="/admin-8E4145/treatments/typeoftreatments", style="float:right")
+								| Types of treatmens
+						.container-posts
+							//- #{data}
+							if data.length > 0
+								table.table
+									thead
+										tr
+											th Treatments
+											th Patients 	
+											th Age
+									tbody
+										- let treatments = data[0];
+										- let patients = data[1];
+										- let types = data[2];
+										
+										each treatment in treatments
+											tr
+											each typ3 in types
+												if (treatment.typeoftreatmentId).toString() == (typ3._id).toString()
+													td
+														a(href="/admin-8E4145/treatments/edit/"+treatment.id) #{typ3.title}
+
+											each patient in patients
+												if (treatment.patientId).toString() == (patient._id).toString()
+													td #{patient.firstname+" "+patient.lastname}
+													- let date = Date.now() - new Date(patient.birthday).getTime();
+													- let age = new Date(date);
+													- let age1 = Math.abs(age.getUTCFullYear()-1970);
+													td #{age1} years old
+
+											
+							else if err
+								h2(style="text-align:center;margin-top:40px;") #{err}
+							else
+								h2(style="text-align:center;margin-top:40px;") You don't have any treatments
+	script.
+		

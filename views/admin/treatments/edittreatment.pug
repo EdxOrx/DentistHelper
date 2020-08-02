@@ -1,0 +1,59 @@
+doctype html lang="en"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Edit treatment
+	link(rel="stylesheet", href="../../../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../../../assets/css/styleA.css")
+	style.
+		span{
+			font-size:1.9rem;
+		}
+		input[type="text"]{
+			max-width: 200px;
+			border: 0px;
+			border-bottom-color: currentcolor;
+			border-bottom-style: none;
+			border-bottom-width: 0px;
+			border-bottom: 1px solid #606c76;
+			border-radius: 0;
+			padding: 0px;
+			padding-bottom: 0px;
+			height: 2.2rem;
+			font-size: 1.8rem;
+			margin-left: 7px;
+			padding-bottom: 5px;
+			margin-bottom: 5px;
+		}
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column.column-50
+					if data.length > 0
+						- let treatments = data[0];
+						- let patients = data[1];
+						- let types = data[2];
+						- let appointments = data[3];
+							h1 #{patients.firstname+" "+patients.lastname}
+							h3 #{patients.address+" "+patients.district+" "+patients.municipality}
+							h2 Tratamiento de #{types.title}
+							if types.priceChild > treatments.price || types.priceAdult > treatments.price
+								h3 Precio Normal: $#{types.price}, precio especial para #{patients.firstname}: $#{treatments.price}
+							else
+								h3 Costo: $#{treatments.price}
+							if appointments != null 
+							
+							else
+								strong(style="display:block;text-align:center;") There are not appointments
+							button End treatments
+					else if err
+						h2(style="text-align:center;margin-top:40px;") #{err}
+					else
+						h2(style="text-align:center;margin-top:40px;") Treatments does not exists
+				

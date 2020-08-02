@@ -1,0 +1,490 @@
+doctype html lang="en"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Edit patient
+	link(rel="stylesheet", href="../../../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../../../assets/css/styleA.css")
+	style.
+		span{
+			font-size:1.9rem;
+		}
+		input[type="text"]{
+			max-width: 200px;
+			border: 0px;
+			border-bottom-color: currentcolor;
+			border-bottom-style: none;
+			border-bottom-width: 0px;
+			border-bottom: 1px solid #606c76;
+			border-radius: 0;
+			padding: 0px;
+			padding-bottom: 0px;
+			height: 2.2rem;
+			font-size: 1.8rem;
+			margin-left: 7px;
+			padding-bottom: 5px;
+			margin-bottom: 5px;
+		}
+		.list-questionnaire{
+			list-style-type:none;
+			overflow:hidden;
+			margin-bottom:0;
+		}
+		.list-questionnaire-item{
+			float: left;
+			border: 1px solid;
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+			background-color: #fff;
+			cursor:pointer;
+			margin-bottom:0;
+		}
+		.list-questions{
+			list-style-type:none;
+			border: 1px solid #606c76;
+		}
+		.list-questions>li{
+			display:block;
+			border-bottom: 1px solid #606c76;
+			background-color: #fff;
+			cursor:pointer;
+			margin-bottom:0;
+		}
+		.list-questions>li>i{
+			margin-left: 20px;
+		}
+		.question-container{
+			border-bottom:1px solid #69707a;
+		}
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column.column-50
+					- let patient = data[0];
+					- let quiestionaries = data[1];
+					h2 #{patient.firstname+" "+patient.lastname}
+					form(method="POST", action="/admin-8E4145/patients/edit/"+patient._id)
+						.container-field
+							span Name:
+							input(type="hidden", value=patient._id, id="patient-id")
+							input(type="text" name="firstname" value=patient.firstname)
+						.container-field
+							span Last name:
+							input(type="text" name="lastname" value=patient.lastname)
+						.container-field
+							span Gender:
+							select(name="gender" style="width:300px;")
+								if patient.gender = "male"
+									option(value="male") Male
+									option(value="female") Female
+									option(value="other") Other
+									
+								else if  patient.gender = "female"
+									option(value="female") Female
+									option(value="male") Male
+									option(value="other") Other
+								else 
+									option(value="other") Other
+									option(value="female") Female
+									option(value="male") Male
+						.container-field
+							span Birthday
+							input(type="text"  placeholder="YYYY/MM/DD"  name="birthday" value=patient.birthday)
+						.container-field
+							span Marital status:
+							select(name="maritalstatus" style="width:300px;")
+								if patient.maritalstatus == 'single'
+									option(value="single") Single
+									option(value="married") Married
+								else
+									option(value="married") Married
+									option(value="single") Single
+						.container-field
+							span Ocuppation:
+							input(type="text" name="ocuppation" value=patient.ocuppation)
+						.container-field
+							span Address:
+							input(type="text" name="address" value=patient.address)
+						.container-field
+							span District:
+							input(type="text" name="district" value=patient.district)
+						.container-field
+							span Municipality:
+							input(type="text" name="municipality" value=patient.municipality)
+						.container-field
+							span State:
+							input(type="text" name="state" value=patient.state)
+						.container-field
+							span Number phone:
+							input(type="text" name="numberphone" value=patient.numberphone)
+						.container-field
+							span Email:
+							input(type="text" name="email" value=patient.email)
+						.container-field
+							span Date of entry:
+							span #{patient.dateofentry}
+						button(type="submit") Guardar
+				.column.column-50
+					h2 Questionnaires:
+					ul.list-questionnaire
+						li.list-questionnaire-item#questionsDone Questionnaires filled
+						li.list-questionnaire-item#questionsAvailable Questionnaires available
+					div#contentQuestions
+					
+	link(rel='stylesheet' href='../../../../assets/js/fullcalendar/sweetalert2.min.css')
+	script(type="text/javascript", src="../../../../assets/js/fullcalendar/sweetalert2.min.js")
+	script.
+		var thisHost = window.location.href.split('/').slice(0, 3).join('/');
+		let container = document.getElementById('contentQuestions');
+		function getAnswers(crud){
+			let questions = document.querySelectorAll('.question-container');
+			let answers = [];
+			for(let i = 0 ; i < questions.length ; i++){
+				let type = questions[i].getAttribute('data-type');
+				let number = questions[i].getAttribute('data-number-question');
+				if(type=="text"){
+					let text = questions[i].childNodes[1].value;
+					answers[i] = {
+						QuestionNumber:number,
+						QuestionType:type,
+						Answer:{
+							text:text
+						}
+					}
+				}else if(type=="yesNo"){
+					let checked = null;
+					for(let j = 1; j<3;j++){
+						if(questions[i].childNodes[j].childNodes[1].checked==true){
+							checked = questions[i].childNodes[j].childNodes[1].value;
+						}
+					}
+					answers[i] = {
+						QuestionNumber:number,
+						QuestionType:type,
+						Answer:{
+							yesNo:checked
+						}
+					}
+				}else if(type== "yesNoComment"){
+					let text = questions[i].childNodes[3].value;
+					let checked = null;
+					for(let j = 1; j<3;j++){
+						if(questions[i].childNodes[j].childNodes[1].checked==true){
+							checked = questions[i].childNodes[j].childNodes[1].value;
+						}
+					}
+					answers[i] = {
+						QuestionNumber:number,
+						QuestionType:type,
+						Answer:{
+							yesNo:checked,
+							comment:text
+						}
+					}
+				}else{
+
+				}
+			}
+			answers = JSON.stringify(answers);
+			if(crud == 'create'){
+				fetch(thisHost+'/admin-8E4145/questionnaire/save',{
+					method:'POST',
+					body: JSON.stringify({patientId:document.getElementById('patient-id').value,
+					questionnaireId: document.getElementById('saveQuestionnaire').getAttribute('data-id'),
+					answers: answers}),
+					headers:{
+						"Content-Type": "application/json"
+					}
+				})
+					.then( res => res.json() )
+					.then( item => {
+						Swal.fire({
+							icon:"success",
+							title:"Questionnaires saved successfully",
+							timer:1000
+						});
+						container.innerHTML = "";
+					})
+					.catch( err => {
+						Swal.fire({
+							icon:"error",
+							title:"Questionnaire not saved",
+							texto:"Try reloading the page",
+						});
+					} )
+			}else if(crud=='update'){
+				fetch(thisHost+'/admin-8E4145/questionnaire/answers/update',{
+					method:'POST',
+					body: JSON.stringify({answersId: document.getElementById('updateData').getAttribute('data-answers-id'),
+					answers: answers}),
+					headers:{
+						"Content-Type": "application/json"
+					}
+				})
+					.then( res => res.json() )
+					.then( item => {
+						Swal.fire({
+							icon:"success",
+							title:"Questionnaire updated successfully",
+							timer:1000
+						});
+					})
+					.catch( err => {
+						Swal.fire({
+							icon:"error",
+							title:"Questionnaire not updated",
+							texto:"There must be an error with the connection",
+						});
+					} )
+			}
+			
+		}
+		function createQuestionnaire(questions){
+			let title = document.createElement('h1');
+			title.innerText = 'Questionnaire: '+questions["title"];
+			container.append(title);
+			let questionsArray = JSON.parse(questions.questions);
+			for(let i = 0 ; i < questionsArray.length ; i++){
+				let containerFieldsQuestion = document.createElement('div');
+				containerFieldsQuestion.className = 'question-container';
+				let questionTextContainer = document.createElement('span');
+				questionTextContainer.innerText = questionsArray[i]['QuestionText'];
+				containerFieldsQuestion.append(questionTextContainer);
+				containerFieldsQuestion.setAttribute('data-number-question', questionsArray[i]['QuestionNumber']);
+				if(questionsArray[i]["QuestionType"] == "text"){
+					let inputText = document.createElement('textarea');
+					containerFieldsQuestion.append(inputText);
+					containerFieldsQuestion.setAttribute('data-type', "text");
+				}else if(questionsArray[i]["QuestionType"] == "yesNo"){
+					let inputTrue = document.createElement('input');
+					let inputFalse = document.createElement('input');
+					let div1 = document.createElement('div');
+					let div2 = document.createElement('div');
+					let span1 = document.createElement('span');
+					let span2 = document.createElement('span');
+					span1.innerText = 'Yes';
+					span2.innerText = 'No';
+					inputTrue.type='radio';
+					inputTrue.name=questionsArray[i]["QuestionNumber"];
+					inputTrue.className='input-radio';
+					inputTrue.value=1;
+					inputFalse.type='radio';
+					inputFalse.name=questionsArray[i]["QuestionNumber"];
+					inputFalse.className='input-radio';
+					inputFalse.value=0;
+					div1.append(span1);
+					div2.append(span2);
+					div1.append(inputTrue);
+					div2.append(inputFalse);
+					containerFieldsQuestion.append(div1);
+					containerFieldsQuestion.append(div2);
+					containerFieldsQuestion.setAttribute('data-type','yesNo');
+				}else if(questionsArray[i]["QuestionType"] == "yesNoComment"){
+					let inputText = document.createElement('textarea');
+					let inputTrue = document.createElement('input');
+					let inputFalse = document.createElement('input');
+					let div1 = document.createElement('div');
+					let div2 = document.createElement('div');
+					let span1 = document.createElement('span');
+					let span2 = document.createElement('span');
+					span1.innerText = 'Yes';
+					span2.innerText = 'No';
+					inputTrue.type='radio';
+					inputTrue.value=1;
+					inputTrue.name=questionsArray[i]["QuestionNumber"];
+					inputFalse.type='radio';
+					inputFalse.value=0;
+					inputFalse.name=questionsArray[i]["QuestionNumber"];
+					div1.append(span1);
+					div2.append(span2);
+					div1.append(inputTrue);
+					div2.append(inputFalse);
+					containerFieldsQuestion.append(div1);
+					containerFieldsQuestion.append(div2);
+					containerFieldsQuestion.append(inputText);
+					containerFieldsQuestion.setAttribute('data-type','yesNoComment');
+				}else{
+				}
+				container.append(containerFieldsQuestion);
+				
+			}
+			let saveButton = document.createElement('button');
+			saveButton.type="button";
+			saveButton.innerText = "Guardar";
+			saveButton.id='saveQuestionnaire';
+			saveButton.setAttribute('data-id',questions["_id"]);
+			container.append(saveButton);
+			saveButton.addEventListener('click', function(e){
+				getAnswers("create");
+			});
+		}
+		function reloadQuestionnaireAvailable(){
+			let questionnaires = document.querySelectorAll('.questions-available');
+			for(let i = 0 ; i < questionnaires.length ; i++ ){
+				questionnaires[i].addEventListener('click', function(event){
+						container.innerHTML = '';
+						let id = this.getAttribute('data-id');
+						fetch(thisHost+'/admin-8E4145/questionnaire/single',{
+							method:'POST',
+							body: JSON.stringify({id:id}),
+							headers:{
+								"Content-Type": "application/json"
+							}
+						})
+							.then( res => res.json() )
+							.then( item => {
+								createQuestionnaire(item.successText);
+							})
+							.catch( err => console.log(err) )
+				});
+			}
+		}
+		function showQuestionnaire(questionnaires){
+			container.innerHTML = '';
+			let elementsLength = questionnaires.length;
+			let list = document.createElement('ul');
+			list.className="list-questions";
+			for(let i = 0 ; i < elementsLength ; i++){
+				let item = document.createElement('li');
+				let icon = document.createElement('i');
+				item.innerHTML = questionnaires[i]["title"] +'</br>Description: '+ questionnaires[i]["description"] ;
+				icon.className = 'ni ni-bullet-list-67';
+				item.className = 'questions-available';
+				item.setAttribute('data-id',questionnaires[i]["_id"] )
+				item.append(icon);
+				list.append(item);
+			}
+			container.append(list);
+			reloadQuestionnaireAvailable();
+		}
+		document.getElementById("questionsAvailable").addEventListener('click', function(e){
+			fetch(thisHost+'/admin-8E4145/questionnaire/available',{
+				method:'POST',
+				body: JSON.stringify({id:document.getElementById('patient-id').value}),
+				headers:{
+					"Content-Type": "application/json"
+				}
+			})
+				.then( res => res.json() )
+				.then( item => {
+					showQuestionnaire(item.successText);
+				})
+				.catch( err => console.log(err) )
+		});
+		function setAnswers(answersStr){
+			let questions = document.querySelectorAll('.question-container');
+			let answers = JSON.parse(answersStr.answers);
+			for(let i = 0; i < answers.length; i++){
+				
+				if(answers[i]['QuestionType'] == "text"){
+					questions[i].childNodes[1].value = answers[i]["Answer"]["text"];
+				}else if(answers[i]['QuestionType']=="yesNo"){
+					for(let j = 1; j<3;j++){
+						if(questions[i].childNodes[j].childNodes[1].value==answers[i]["Answer"]["yesNo"]){
+							questions[i].childNodes[j].childNodes[1].checked = true;
+						}
+					}
+				}else if(answers[i]['QuestionType']== "yesNoComment"){
+					for(let j = 1; j<3;j++){
+						if(questions[i].childNodes[j].childNodes[1].value==answers[i]["Answer"]["yesNo"]){
+							questions[i].childNodes[j].childNodes[1].checked = true;
+						}
+					}
+					questions[i].childNodes[3].value = answers[i]["Answer"]["comment"];
+				}
+			}
+			document.getElementById('saveQuestionnaire').remove();
+			let saveButton = document.createElement('button');
+			saveButton.type="button";
+			saveButton.innerText = "Actualizar datos";
+			saveButton.id='updateData';
+			saveButton.setAttribute('data-answers-id',answersStr["_id"]);
+			container.append(saveButton);
+			saveButton.addEventListener('click', function(event){
+				getAnswers("update");
+			});
+		}
+		function createAndShowQuestionsAnswers(data){
+			let answers = data[0][0];
+			let questions = data[1];
+			if(answers.answers !== null){
+				if(JSON.parse(answers.answers).length == JSON.parse(questions.questions).length){
+					createQuestionnaire(questions);
+					setAnswers(answers);
+				}else{
+					Swal.fire({
+						icon:"error",
+						title:"Questionnaire not saved",
+						texto:"Verify that there is a connection",
+					});
+				}
+			}else{
+				createQuestionnaire(questions);
+				document.getElementById('saveQuestionnaire').remove();
+				let saveButton = document.createElement('button');
+				saveButton.type="button";
+				saveButton.innerText = "Update data";
+				saveButton.id='updateData';
+				saveButton.setAttribute('data-answers-id',answers["_id"]);
+				container.append(saveButton);
+				saveButton.addEventListener('click', function(event){
+					getAnswers("update");
+				});
+			}
+		}
+		function reloadQuestionnaireDone(){
+			let questionnaires = document.querySelectorAll('.answers-available');
+			for(let i = 0 ; i < questionnaires.length ; i++ ){
+				questionnaires[i].addEventListener('click', function(event){
+						container.innerHTML = '';
+						let questionnaireId = this.getAttribute('data-id');
+						let patientId = document.getElementById('patient-id').value;
+						fetch(thisHost+'/admin-8E4145/questionnaire/answers',{
+							method:'POST',
+							body: JSON.stringify({questionnaireId:questionnaireId, patientId:patientId}),
+							headers:{
+								"Content-Type": "application/json"
+							}
+						})
+							.then( res => res.json() )
+							.then( item => {
+								createAndShowQuestionsAnswers(item.successText);
+							})
+							.catch( err => console.log(err) )
+				});
+			}
+		}
+		function showQuestionnaireDone(questionnairesDone){
+			container.innerHTML = '';
+			let elementsLength = questionnairesDone.length;
+			let list = document.createElement('ul');
+			list.className="list-questions";
+			for(let i = 0 ; i < elementsLength ; i++){
+				let item = document.createElement('li');
+				let icon = document.createElement('i');
+				item.innerHTML = questionnairesDone[i]["title"] +'</br>Description: '+ questionnairesDone[i]["description"] ;
+				icon.className = 'ni ni-bullet-list-67';
+				item.className = 'answers-available';
+				item.setAttribute('data-id',questionnairesDone[i]["_id"] )
+				item.append(icon);
+				list.append(item);
+			}
+			container.append(list);
+			reloadQuestionnaireDone();
+		}
+		let idPatient = document.getElementById('patient-id').value;
+		document.getElementById("questionsDone").addEventListener('click', function(e){
+			fetch(thisHost+'/admin-8E4145/questionnaire/done/'+idPatient)
+				.then( res => res.json() )
+				.then( item => {
+					showQuestionnaireDone(item.successText);
+				})
+				.catch( err => console.log(err) )
+		});
+		

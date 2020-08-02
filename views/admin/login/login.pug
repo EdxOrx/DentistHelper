@@ -1,0 +1,47 @@
+doctype html lang="en"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Login
+	link(rel="stylesheet", href="../../../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../../../assets/css/styleA.css")
+
+	.row
+		.column.column-50.column-offset-25
+			form(action="/admin-login-5052136", method="POST")
+				.content
+					span Email
+					input(type="text", placeholder="Email", name="email")
+				.content
+					span Password
+					input(type="password", placeholder="Password", name="password")
+				
+				.content
+					#captchaContainer
+						#{data}
+					span Change captcha:
+					img(src="./assets/images/reload.png", id="reloadCaptcha", style="width:25px; margin-left:20px;")
+					input(type="text", placeholder="Captcha", name="captcha")
+				.content
+					button(type="submit") Log in
+	script(type="text/javascript", src="../../../../assets/js/argon2.js")
+	script.
+
+		var thisHost = window.location.href.split('/').slice(0, 3).join('/');
+		document.getElementById('reloadCaptcha').addEventListener('click',function(){
+			fetch( thisHost+'/newcaptcha')
+				.then( res => res.json() )
+				.then( item => {
+					document.getElementById('captchaContainer').innerHTML = item.data;
+				})
+				.catch( err => {
+					Swal.fire({
+						icon:"error",
+						title:"Cannot change captcha",
+						text:"Try reloading the page.",
+					});
+				} )
+		});

@@ -1,0 +1,27 @@
+doctype html
+head
+	meta(charset='UTF-8')
+	meta(name='viewport' content='width=device-width,initial-scale=1')
+	meta(http-equiv='X-UA-Compatible' content='ie=edge')
+	title Dr. John Doe
+	link(rel='stylesheet' href='../../assets/css/reset.css')
+	link(rel='stylesheet' href='../../assets/css/normalize.css')
+	link(rel='stylesheet' href='../../assets/css/milligram.css')
+	link(rel='stylesheet' href='../../assets/css/header.css')
+	link(rel='stylesheet' href='../../assets/css/style.css')
+	meta(name='description', content='Dental office')
+	meta(name='author' content='Dr. John Doe')
+	include ./partials/header.pug
+	main.main
+		section.container
+			.row
+				.column
+					.doctor-info-container
+						.image-doctor-container
+							img.image-doctor(src="../../assets/images/doctor.jpg" alt="Dr. John Doe")
+						.info-doctor-container
+							h1 John Doe
+							p.doctor-description
+								| I am a Dentist
+							ul.list-acknowledgements
+								li Degree dentist

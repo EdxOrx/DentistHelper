@@ -1,0 +1,108 @@
+doctype html
+head
+	meta(charset='UTF-8')
+	meta(name='viewport' content='width=device-width,initial-scale=1')
+	meta(http-equiv='X-UA-Compatible' content='ie=edge')
+	title Contact
+	link(rel='stylesheet' href='../../assets/css/reset.css')
+	link(rel='stylesheet' href='../../assets/css/normalize.css')
+	link(rel='stylesheet' href='../../assets/css/milligram.css')
+	link(rel='stylesheet' href='../../assets/css/header.css')
+	link(rel='stylesheet' href='../../assets/css/style.css')
+	meta(name='description', content='Dental office')
+	meta(name='author' content='Dr John Doe')
+
+	include ./partials/header.pug
+	main.main
+		section.container
+			.row(style="padding-top:25px;")
+				.column.colum-50(style="padding:0rem 6rem;")
+					h3.title-contact Send us an email
+					input(type="text" placeholder="Name", id='name')
+					input(type="text" placeholder="Email", id='email')
+					textarea(placeholder="Content", id='text')
+					#captchaContainer
+						#{data}
+					span Change captcha:
+					img(src="./assets/images/reload.png", id="reloadCaptcha", style="width:25px; margin-left:20px;")
+					input(type='text', placeholder='Captcha', id='captcha')
+					h6 See our 
+						a(href='aviso-privacidad') privacy policy 
+						| to know how your data is used
+					button.send-email-button#sendButton Send
+
+				.column.colum-50(style="padding:0rem 6rem;")
+					h3.title-contact Send us a message
+					span.phone-numbers +1548118214
+					span.phone-numbers +1368548141
+					h4.title-contact(style="margin-top:30px;") Schedule:
+					ul.list-schedule
+						li Monday to Friday from 10:00 am. to 20:00 pm.
+						li Saturdays from 10:00 am. to 16:00 pm.
+
+			.row
+				.column
+					h1.address Main street #63, New york
+	link(rel='stylesheet' href='../../assets/js/fullcalendar/sweetalert2.min.css')
+	script(type="text/javascript", src="../../assets/js/fullcalendar/sweetalert2.min.js")
+	script.
+		var thisHost = window.location.href.split('/').slice(0, 3).join('/');
+		document.getElementById('sendButton').addEventListener('click', function(){
+			let data ={
+				name: document.getElementById('name').value,
+				text: document.getElementById('text').value,
+				email: document.getElementById('email').value,
+				captcha: document.getElementById('captcha').value
+			}
+			fetch( thisHost+'/sendemail', {
+				method:'POST',
+				body: JSON.stringify(data),
+				headers:{
+					"Content-Type": "application/json"
+				}
+			})
+				.then( res => res.json() )
+				.then( item => {
+					console.log(item);
+					if(item.error){
+						Swal.fire({
+							icon:"error",
+							title:"Data not sent",
+							text:"Check your captcha.",
+						});
+					}else{
+						Swal.fire({
+							icon:"success",
+							title:"Send successfully",
+							text:'Some one will call you to set your appoinment.',
+							timer:10000
+						});
+						document.getElementById('name').value = '';
+						document.getElementById('email').value = '';
+						document.getElementById('text').value = '';
+						document.getElementById('captcha').value = '';
+						document.getElementById('reloadCaptcha').click()
+					}
+				})
+				.catch( err => {
+					Swal.fire({
+						icon:"error",
+						title:"Data not sent",
+						text:"Check captcha and verify all fields.",
+					});
+				} )
+		});
+		document.getElementById('reloadCaptcha').addEventListener('click',function(){
+			fetch( thisHost+'/newcaptcha')
+				.then( res => res.json() )
+				.then( item => {
+					document.getElementById('captchaContainer').innerHTML = item.data;
+				})
+				.catch( err => {
+					Swal.fire({
+						icon:"error",
+						title:"Captcha cannot be changed",
+						text:"Reload the page.",
+					});
+				} )
+		});

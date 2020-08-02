@@ -1,0 +1,43 @@
+doctype html lang="en"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Posts
+	link(rel="stylesheet", href="../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../assets/css/styleA.css")
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column
+					.content-container
+						.action-buttons
+							a.link-button(href="/admin-8E4145/posts/createpost")
+								i.ni.ni-fat-add
+								| New post
+						.container-posts
+
+							if data.length > 0
+								table.table
+									thead
+										tr
+											th Title
+											th Description
+											th Publication date
+									tbody
+										- let posts = data;
+										each post in posts
+											tr
+												td
+													a(href="/admin-8E4145/posts/edit/"+post.id) #{post.title}
+												td #{post.description}
+												td #{post.publisheddate}
+											
+							else
+								h2(style="text-align:center;margin-top:40px;")  You don't have any post
+	script.

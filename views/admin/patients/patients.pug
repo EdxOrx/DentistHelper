@@ -1,0 +1,46 @@
+doctype html lang="en"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Patients
+	link(rel="stylesheet", href="../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../assets/css/styleA.css")
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column
+					.content-container
+						.action-buttons
+							a.link-button(href="/admin-8E4145/patients/addnewpatient")
+								i.ni.ni-fat-add
+								| Add patient
+						.container-posts
+
+							if data.length > 0
+								table.table
+									thead
+										tr
+											th Name
+											th Age
+											th Address
+									tbody
+										- let patients = data;
+										each patient in patients
+											tr
+												td
+													a(href="/admin-8E4145/patients/edit/"+patient.id) #{patient.firstname+" "+patient.lastname}
+												- let date = Date.now() - new Date(patient.birthday).getTime();
+												- let age = new Date(date);
+												- let age1 = Math.abs(age.getUTCFullYear()-1970);
+												td #{age1} years old
+												td #{patient.address}
+											
+							else
+								h2(style="text-align:center;margin-top:40px;") You don't have any patients
+	script.

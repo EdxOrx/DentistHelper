@@ -1,0 +1,42 @@
+doctype html lang="en"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Emails
+	link(rel="stylesheet", href="../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../assets/css/styleA.css")
+	script(type="text/javascript", src="../../assets/js/fullcalendar/moment-with-locales.js")
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column
+					.content-container
+						.container-posts
+							if data.length > 0
+								table.table
+									thead
+										tr
+											th Name
+											th Email
+											th Number phone
+											th type
+											th text
+									tbody
+										
+										each email in data
+											tr
+												td #{email.name}
+												td #{email.email}
+												td #{email.numberphone}
+												td #{email.type}
+												td #{email.text}
+									
+							else
+								h2(style="text-align:center;margin-top:40px;") You dont have any emails
+	script.

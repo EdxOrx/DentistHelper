@@ -1,0 +1,172 @@
+doctype html
+head
+	meta(charset='UTF-8')
+	meta(name='viewport' content='width=device-width,initial-scale=1')
+	meta(http-equiv='X-UA-Compatible' content='ie=edge')
+	title Dental office
+	link(rel='stylesheet' href='../../assets/css/normalize.css')
+	link(rel='stylesheet' href='../../assets/css/milligram.css')
+	link(rel='stylesheet' href='../../assets/css/header.css')
+	link(rel='stylesheet' href='../../assets/css/style.css')
+	meta(name='description', content='Dental office')
+	meta(name='author' content='Dr. John Doe')
+	style.
+		.modalWindow{
+			position: fixed;
+			z-index: 10;
+			background-color: rgba(0,0,0,0.6);
+			width: 100%;
+			height:100vh;
+		}
+		.modalContent{
+			width: 30%;
+			height:100vh;
+			overflow:auto;
+			left: 35%;
+			position: relative;
+			background-color: white;
+			padding: 12px;
+			border-radius: 10px;
+		}
+		#cancelButton{
+			overflow: hidden;
+			background-color: transparent;
+			color: red;
+			border: 0;
+			padding: 0px;
+			margin-left: 3rem;
+		}
+		#sendButton{
+			float: right;
+			overflow:hidden;
+			margin-right: 3rem;
+		}
+	include ./partials/header.pug
+	.modalWindow#modalWindow(style="display:none;")
+		.modalContent#modalContent
+			h3(style='text-align:center;') Fill this form to make an appointment
+			.field
+				span Name: 
+				input(type='text', placeholder='Nombre', id='name')
+			.field
+				span Number phone: 
+				input(type='text', placeholder='Telefono', id='phone')
+			.field
+				span Email: 
+				input(type='text', placeholder='Email', id='email')
+			.field
+				span Catpcha:	
+				#captchaContainer
+					#{captcha}
+				span Change captcha:
+				img(src="./assets/images/reload.png", id="reloadCaptcha", style="width:25px; margin-left:20px;")
+				input(type='text', placeholder='Captcha', id='captcha')
+				h6 See our 
+					a(href='aviso-privacidad') privacy policy
+					| to know how your data is used
+			button#cancelButton Cancel
+			button#sendButton Send
+
+	main.main
+		div.poster-index
+			section.container
+				div.row
+					div.column.column-50.image-text-center-column
+						div.index-container-poster
+							h1.title.index Dental office
+							p.description.index We make you smile
+							button.button.appointment#makeAppointment Make an appointment!
+						
+		div(style="padding: 20px 0px 0px 0px;width: 98%;margin: 0 auto;")
+			div.row
+				div.column.image-text-center-column
+					h1.title(style="text-align: center;") Posts
+					div.lastest-posts
+						ul.list-latests-posts
+							each post in data
+								li.element-latest-posts
+									div.element-container-latest-posts
+										h2 #{post.title}
+										img.image-post(src="/posts/images/"+post.poster, alt="como cepillarse")
+										p #{post.description}
+										a(href="/noticias/"+post._id)
+											button.button-clear.read-more Read more
+											
+	link(rel='stylesheet' href='../../assets/js/fullcalendar/sweetalert2.min.css')
+	script(type="text/javascript", src="../../assets/js/fullcalendar/sweetalert2.min.js")
+	script.
+		var thisHost = window.location.href.split('/').slice(0, 3).join('/');
+		let button = document.getElementById('makeAppointment');
+		let modalContainer = document.getElementById('modalWindow');
+		button.addEventListener('click', function(){
+			modalWindow.style.display="block";
+		});
+		modalContainer.addEventListener('click', function(event){
+			modalWindow.style.display="none";
+		});
+		document.getElementById('cancelButton').addEventListener('click', function(){
+			modalWindow.style.display="none";
+		});
+		document.getElementById('modalContent').addEventListener('click', function(){
+			event.stopPropagation();
+		});
+		document.getElementById('sendButton').addEventListener('click', function(){
+			let data ={
+				name: document.getElementById('name').value,
+				phone: document.getElementById('phone').value,
+				email: document.getElementById('email').value,
+				captcha: document.getElementById('captcha').value
+			}
+			fetch( thisHost+'/makeappointment', {
+				method:'POST',
+				body: JSON.stringify(data),
+				headers:{
+					"Content-Type": "application/json"
+				}
+			})
+				.then( res => res.json() )
+				.then( item => {
+					console.log(item);
+					if(item.error){
+						Swal.fire({
+							icon:"error",
+							title:"Data not send",
+							text:"Verify the captcha is correct.",
+						});
+					}else{
+						modalWindow.style.display="none";
+						Swal.fire({
+							icon:"success",
+							title:"Send successfully",
+							text:'You will get a call later.',
+							timer:10000
+						});
+						document.getElementById('name').value ="";
+						document.getElementById('phone').value ="";
+						document.getElementById('email').value ="";
+						document.getElementById('captcha').value ="";
+						document.getElementById('reloadCaptcha').click()
+					}
+				})
+				.catch( err => {
+					Swal.fire({
+						icon:"error",
+						title:"Data not sent",
+						text:"Verify captcha is correct and all fields are filled.",
+					});
+				} )
+		});
+		document.getElementById('reloadCaptcha').addEventListener('click',function(){
+			fetch( thisHost+'/newcaptcha')
+				.then( res => res.json() )
+				.then( item => {
+					document.getElementById('captchaContainer').innerHTML = item.data;
+				})
+				.catch( err => {
+					Swal.fire({
+						icon:"error",
+						title:"Captcha cannot change",
+						text:"Reload the page.",
+					});
+				} )
+		})

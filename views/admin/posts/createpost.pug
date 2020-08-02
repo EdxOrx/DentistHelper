@@ -1,0 +1,228 @@
+doctype html
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title New post
+	link(rel="stylesheet", href="../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../assets/css/styleA.css")
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			form(action="/admin-8E4145/posts/createpost", enctype="multipart/form-data", method="post", id="form")
+				.row
+					.column
+						.content-container
+							.row
+								.column.column-75
+									.actions-buttons
+										a.link-button(href="/admin-8E4145/posts", style="float:right;margin-bottom: 20px;")
+											i.ni.ni-curved-next.back-icon
+											| Back
+									input#titlePost(type="text", placeholder="Title", name="title")
+									textarea#editor
+								.colum.column-25
+									.post-actions
+										.post-action-container
+											h4 Post
+											.action-buttons-container
+												button.publish-post-button#publish-post(type="submit") publish
+										.post-action-container
+											h4 Poster
+											img#previewPoster(src="")
+											input#imageInput(type="file", accept="image/gif, image/jpeg, image/png", onchange='previewImage(event)', name="poster")
+										.post-action-container
+											h4 Keywords
+											input#keywordInput(type="text")
+											#keywordsContainer
+											input(type="text", name="keywords", id="keywordsInputHidden", style='display:none;')
+										.post-action-container
+											h4 Description
+											textarea#descriptionContainer(name="description")
+											textarea#contentTiny(style="display:none;max-width:100%;", name="content")
+
+	script(src="../../assets/js/tinymce/tinymce.min.js")
+	script(src="../../assets/js/encoder.js")
+
+	script.
+		let arrayKeywords = [];
+		let keywordText = document.getElementById('keywordInput');
+		let keywordContainer = document.getElementById('keywordsContainer');
+		let keywordIconDelete = document.querySelectorAll('.keyword-post-delete-icon');
+		let keywordsInputHidden = document.getElementById('keywordsInputHidden');
+		let form = document.getElementById('form');
+		let contentTiny = document.getElementById('contentTiny');
+		form.addEventListener('submit', function(event){
+			contentTiny.value = Encoder.htmlEncode(tinyMCE.activeEditor.getContent({format : 'raw'}));
+		});
+		function reloadAllKeyWordsonDelete(text){
+			let keywordPost = document.querySelectorAll('.keyword-post');
+			let keywordPostElements = keywordPost.length;
+			for(let i = 0 ; i < keywordPostElements ; i++){
+				if(keywordPost[i].innerText === text){
+					keywordPost[i].remove();
+				}
+			}
+			return;
+		}
+		function deleteKeyword(event){
+			let temporalText = this.parentElement.innerText;
+			arrayKeywords = arrayKeywords.filter( item => {return item !== temporalText});
+			reloadAllKeyWordsonDelete(temporalText);
+			keywordsInputHidden.value = arrayKeywords;
+		}
+		function reloadKeywordDeleteIcon(){
+			keywordIconDelete= document.querySelectorAll('.keyword-post-delete-icon');
+			for(let i = 0; i < keywordIconDelete.length ; i++ ){
+				keywordIconDelete[i].addEventListener('click', deleteKeyword);
+			}
+		}
+		function addKeyword(event){
+			if(event.keyCode === 13){
+				event.preventDefault();
+				if(/^\s*$/.test(this.value)){
+					return ;
+				}
+				if(!arrayKeywords.includes(this.value)){
+					let span = document.createElement('span');
+					span.innerHTML = this.value;
+					span.className = "keyword-post";
+					let icon = document.createElement('i');
+					icon.className = "ni ni-fat-remove keyword-post-delete-icon";
+					span.appendChild(icon);
+					keywordContainer.appendChild(span);
+					arrayKeywords = [...arrayKeywords, this.value];
+					this.value = "";
+					keywordsInputHidden.value = arrayKeywords.join(", ");
+					reloadKeywordDeleteIcon();
+				}else{
+					console.log("It's already inside the tags");
+				}
+			}
+		}
+		keywordText.addEventListener('keydown', addKeyword);
+		var previewImage = function(event){
+			var input = event.target;
+			var reader = new FileReader();
+			reader.onload = function(){
+				var dataURL = reader.result;
+				var output = document.getElementById('previewPoster');
+				output.src = dataURL;
+			};
+			reader.readAsDataURL(input.files[0]);
+		}
+
+	script.
+		tinymce.init({
+			selector: 'textarea#editor',
+			entity_encoding : "raw",
+			plugins: 'print preview paste importcss searchreplace autolink autosave save autoresize directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+			width: '100%',
+			autoresize_min_height: 600,
+			imagetools_cors_hosts: ['picsum.photos'],
+			menubar: 'file edit view insert format tools table help',
+			toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+			toolbar_sticky: true,
+			autosave_ask_before_unload: true,
+			autosave_interval: "30s",
+			autosave_prefix: "{path}{query}-{id}-",
+			autosave_restore_when_empty: false,
+			autosave_retention: "2m",
+			image_advtab: true,
+			importcss_append: true,
+			template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
+			template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
+			height: 600,
+			image_caption: true,
+			image_title: true,
+			image_list: function(success) {
+				success([
+					{title: 'Dog', value: '/posts/images/blobid0.jpg'},
+					{title: 'Cat', value: '/posts/images/blobid1594068526408.jpg'}
+				]);
+			},
+			quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+			noneditable_noneditable_class: "mceNonEditable",
+			toolbar_mode: 'sliding',
+			contextmenu: "link image imagetools table",
+			relative_urls : false,
+			remove_script_host : false,
+			convert_urls : true,
+			 // without images_upload_url set, Upload tab won't show up
+			images_upload_url: (window.location.href.split('/').slice(0, 3).join('/'))+'/admin-8E4145/posts/createpost/uploadimage',
+			
+			// override default upload handler to simulate successful upload
+			images_upload_handler: function (blobInfo, success, failure, progress) {
+				var xhr, formData;
+			
+				xhr = new XMLHttpRequest();
+				xhr.withCredentials = false;
+				xhr.open('POST', (window.location.href.split('/').slice(0, 3).join('/'))+'/admin-8E4145/posts/createpost/uploadimage');
+				xhr.upload.onprogress = function (e) {
+					progress(e.loaded / e.total * 100);
+				};
+				xhr.onload = function() {
+					var json;
+				
+					if (xhr.status != 200) {
+						failure('HTTP Error: ' + xhr.status);
+						return;
+					}
+				
+					json = JSON.parse(xhr.responseText);
+				
+					if (!json || typeof json.location != 'string') {
+						failure('Invalid JSON: ' + xhr.responseText);
+						return;
+					}
+					
+					success((window.location.href.split('/').slice(0, 3).join('/'))+json.location);
+				};
+				formData = new FormData();
+				formData.append('file', blobInfo.blob(), blobInfo.filename());
+			
+				xhr.send(formData);
+			},
+			file_picker_types: 'image',
+			/* and here's our custom image picker*/
+			file_picker_callback: function (cb, value, meta) {
+				var input = document.createElement('input');
+				input.setAttribute('type', 'file');
+				input.setAttribute('accept', 'image/*');
+
+				/*
+				Note: In modern browsers input[type="file"] is functional without
+				even adding it to the DOM, but that might not be the case in some older
+				or quirky browsers like IE, so you might want to add it to the DOM
+				just in case, and visually hide it. And do not forget do remove it
+				once you do not need it anymore.
+				*/
+
+				input.onchange = function () {
+					var file = this.files[0];
+
+					var reader = new FileReader();
+					reader.onload = function () {
+						/*
+						Note: Now we need to register the blob in TinyMCEs image blob
+						registry. In the next release this part hopefully won't be
+						necessary, as we are looking to handle it internally.
+						*/
+						var id = 'blobid' + (new Date()).getTime();
+						var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+						var base64 = reader.result.split(',')[1];
+						var blobInfo = blobCache.create(id, file, base64);
+						blobCache.add(blobInfo);
+
+						/* call the callback and populate the Title field with the file name */
+						cb(blobInfo.blobUri(), { title: file.name });
+					};
+					reader.readAsDataURL(file);
+				};
+
+				input.click();
+			}
+		});

@@ -1,0 +1,441 @@
+doctype html lang="es"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Edit appointment
+	link(rel="stylesheet", href="../../../../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../../../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../../../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../../../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../../../../assets/css/styleA.css")
+	style.
+		.panel-body>.row{
+			display:table;
+		}
+
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column
+					.content-container
+						.container-posts
+							- let datao = JSON.parse(data);
+							- let appointment = datao[0];
+							- let patient = datao[1];
+							h2 #{patient.firstname+" "+patient.lastname}
+							h3 #{patient.address+" "+patient.district+" "+patient.municipality}
+							- let date = Date.now() - new Date(patient.birthday).getTime();
+							- let age = new Date(date);
+							- let age1 = Math.abs(age.getUTCFullYear()-1970);
+							if patient.gender == "male"
+								h4 Male, 
+									span#agePatient #{age1} 
+									| years old
+							else if patient.gender == "female"
+								h4 Female, 
+									span#agePatient #{age1} 
+									| years old
+							else 
+								h4 Other, 
+									span#agePatient #{age1} 
+									| years old
+							form(action="/admin-8E4145/calendar/appointment/edit/"+appointment._id, method="POST", id="sendData")
+								.container-field
+									span Comments:
+									textarea(name="description") #{appointment.comments}
+									
+								.container-field
+									span Odontogram:
+									.container
+										.panel.panel-primary
+											.panel-heading
+												h3.panel-title Odontogram
+											.panel-body
+												.row
+													.col-md-6.col-md-offset-3
+														#controls.panel.panel-default
+															.panel-body
+																.btn-group(data-toggle='buttons')
+																	label#fractura.btn.btn-danger.active
+																		input#option1(type='radio' name='options' autocomplete='off' checked)
+																		| Fracture
+																	label#restauracion.btn.btn-primary
+																		input#option2(type='radio' name='options' autocomplete='off')
+																		| Obturation
+
+																	label#extraccion.btn.btn-warning
+																		input#option3(type='radio' name='options' autocomplete='off')
+																		| Extraction
+
+																
+
+													#tr.col-xs-6.col-sm-6.col-md-6.col-lg-6.
+														
+														
+													#tl.col-xs-6.col-sm-6.col-md-6.col-lg-6.
+														
+														
+													#tlr.col-xs-6.col-sm-6.col-md-6.col-lg-6.text-right.
+														
+														
+													#tll.col-xs-6.col-sm-6.col-md-6.col-lg-6.
+														
+														
+												.row
+													#blr.col-xs-6.col-sm-6.col-md-6.col-lg-6.text-right.
+														
+														
+													#bll.col-xs-6.col-sm-6.col-md-6.col-lg-6.
+														
+														
+													#br.col-xs-6.col-sm-6.col-md-6.col-lg-6.
+														
+														
+													#bl.col-xs-6.col-sm-6.col-md-6.col-lg-6.
+														
+														
+												.row
+													.col-xs-12.col-sm-12.col-md-12.col-lg-12
+														.panel.panel-default
+															.panel-body
+																.col-xs-4.col-sm-4.col-md-4.col-lg-4.text-left
+																	.click-red(style='height: 20px; width:20px; display:inline-block;')
+																	| = Fracture
+
+																	br
+																	
+
+																.col-xs-4.col-sm-4.col-md-4.col-lg-4.text-center
+																	.click-blue(style='height: 20px; width:20px; display:inline-block;')
+																	| = Obturation
+
+																.col-xs-4.col-sm-4.col-md-4.col-lg-4.text-right
+																	span(style='display:inline:block;') Extracted
+																	|  = 
+																	img(style='display:inline:block;' src='../../../../../assets/js/odontogram/extraccion.png')
+																	
+									textarea#teethInfo(name="teeths", style="display:none;")
+								button(type="submit") Save
+							
+							
+							//- datetimeend
+							//- comments
+							//- odontogram
+							//- pictures
+	script.
+	link(href='../../../../../assets/js/odontogram/base.css' rel='stylesheet')
+	link(href='../../../../../assets/js/odontogram/css/bootstrap.css' rel='stylesheet')
+	script(src='../../../../../assets/js/odontogram/jquery-1.10.2.min.js')
+	script(src='../../../../../assets/js/odontogram/bootstrap.js')
+	script.
+		
+		function getAllTeeths(){
+			let ids = ['t18','l18','b18','r18', 'c18',
+			't17','l17','b17','r17', 'c17',
+			't16','l16','b16','r16', 'c16',
+			't15','l15','b15','r15', 'c15',
+			't14','l14','b14','r14', 'c14',
+			't13','l13','b13','r13', 'c13',
+			't12','l12','b12','r12', 'c12',
+			't11','l11','b11','r11', 'c11',
+			't21','l21','b21','r21', 'c21',
+			't22','l22','b22','r22', 'c22',
+			't23','l23','b23','r23', 'c23',
+			't24','l24','b24','r24', 'c24',
+			't26','l26','b26','r26', 'c26',
+			't27','l27','b27','r27', 'c27',
+			't28','l28','b28','r28', 'c28',
+			't48','l48','b48','r48', 'c48',
+			't47','l47','b47','r47', 'c47',
+			't46','l46','b46','r46', 'c46',
+			't45','l45','b45','r45', 'c45',
+			't44','l44','b44','r44', 'c44',
+			't43','l43','b43','r43', 'c43',
+			't42','l42','b42','r42', 'c42',
+			't41','l41','b41','r41', 'c41',
+			't31','l31','b31','r31', 'c31',
+			't32','l32','b32','r32', 'c32',
+			't33','l33','b33','r33', 'c33',
+			't34','l34','b34','r34', 'c34',
+			't35','l35','b35','r35', 'c35',
+			't36','l36','b36','r36', 'c36',
+			't37','l37','b37','r37', 'c37',
+			't38','l38','b38','r38', 'c38',
+			'tleche55','lleche55','bleche55','rleche55', 'cleche55',
+			'tleche54','lleche54','bleche54','rleche54', 'cleche54',
+			'tleche53','lleche53','bleche53','rleche53', 'cleche53',
+			'tleche52','lleche52','bleche52','rleche52', 'cleche52',
+			'tleche51','lleche51','bleche51','rleche51', 'cleche51',
+			'tleche61','lleche61','bleche61','rleche61', 'cleche61',
+			'tleche62','lleche62','bleche62','rleche62', 'cleche62',
+			'tleche63','lleche63','bleche63','rleche63', 'cleche63',
+			'tleche64','lleche64','bleche64','rleche64', 'cleche64',
+			'tleche65','lleche65','bleche65','rleche65', 'cleche65',
+			'tleche85','lleche85','bleche85','rleche85', 'cleche85',
+			'tleche84','lleche84','bleche84','rleche84', 'cleche84',
+			'tleche83','lleche83','bleche83','rleche83', 'cleche83',
+			'tleche82','lleche82','bleche82','rleche82', 'cleche82',
+			'tleche81','lleche81','bleche81','rleche81', 'cleche81',
+			'tleche71','lleche71','bleche71','rleche71', 'cleche71',
+			'tleche72','lleche72','bleche72','rleche72', 'cleche72',
+			'tleche73','lleche73','bleche73','rleche73', 'cleche73',
+			'tleche74','lleche74','bleche74','rleche74', 'cleche74',
+			'tleche75','lleche75','bleche75','rleche75', 'cleche75'];
+			let lengthArray = ids.length;
+			let teethsColors = {}
+			for(let i = 0;i<lengthArray; i++){
+				teethsColors[i]={'id': ids[i], class:document.getElementById(ids[i]).className }
+			}
+			document.getElementById('teethInfo').innerText = JSON.stringify(teethsColors);
+		}
+		let form = document.getElementById('sendData');
+		form.addEventListener('submit', function(event){
+			getAllTeeths();
+		});
+		function replaceAll(find, replace, str) {
+			return str.replace(new RegExp(find, 'g'), replace);
+		}
+
+		function createOdontogram() {
+			var htmlLecheLeft = "",
+				htmlLecheRight = "",
+				htmlLeft = "",
+				htmlRight = "",
+				a = 1;
+			for (var i = 9 - 1; i >= 1; i--) {
+				//Dientes Definitivos Cuandrante Derecho (Superior/Inferior)
+				htmlRight += '<div data-name="value" id="dienteindex' + i + '" class="diente">' +
+					'<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="label label-info">index' + i + '</span>' +
+					'<div id="tindex' + i + '" class="cuadro click">' +
+					'</div>' +
+					'<div id="lindex' + i + '" class="cuadro izquierdo click">' +
+					'</div>' +
+					'<div id="bindex' + i + '" class="cuadro debajo click">' +
+					'</div>' +
+					'<div id="rindex' + i + '" class="cuadro derecha click click">' +
+					'</div>' +
+					'<div id="cindex' + i + '" class="centro click">' +
+					'</div>' +
+					'</div>';
+				//Dientes Definitivos Cuandrante Izquierdo (Superior/Inferior)
+				htmlLeft += '<div id="dienteindex' + a + '" class="diente">' +
+					'<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="label label-info">index' + a + '</span>' +
+					'<div id="tindex' + a + '" class="cuadro click">' +
+					'</div>' +
+					'<div id="lindex' + a + '" class="cuadro izquierdo click">' +
+					'</div>' +
+					'<div id="bindex' + a + '" class="cuadro debajo click">' +
+					'</div>' +
+					'<div id="rindex' + a + '" class="cuadro derecha click click">' +
+					'</div>' +
+					'<div id="cindex' + a + '" class="centro click">' +
+					'</div>' +
+					'</div>';
+				if (i <= 5) {
+					//Dientes Temporales Cuandrante Derecho (Superior/Inferior)
+					htmlLecheRight += '<div id="dienteLindex' + i + '" style="left: -25%;" class="diente-leche">' +
+						'<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="label label-primary">index' + i + '</span>' +
+						'<div id="tlecheindex' + i + '" class="cuadro-leche top-leche click">' +
+						'</div>' +
+						'<div id="llecheindex' + i + '" class="cuadro-leche izquierdo-leche click">' +
+						'</div>' +
+						'<div id="blecheindex' + i + '" class="cuadro-leche debajo-leche click">' +
+						'</div>' +
+						'<div id="rlecheindex' + i + '" class="cuadro-leche derecha-leche click click">' +
+						'</div>' +
+						'<div id="clecheindex' + i + '" class="centro-leche click">' +
+						'</div>' +
+						'</div>';
+				}
+				if (a < 6) {
+					//Dientes Temporales Cuandrante Izquierdo (Superior/Inferior)
+					htmlLecheLeft += '<div id="dienteLindex' + a + '" class="diente-leche">' +
+						'<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="label label-primary">index' + a + '</span>' +
+						'<div id="tlecheindex' + a + '" class="cuadro-leche top-leche click">' +
+						'</div>' +
+						'<div id="llecheindex' + a + '" class="cuadro-leche izquierdo-leche click">' +
+						'</div>' +
+						'<div id="blecheindex' + a + '" class="cuadro-leche debajo-leche click">' +
+						'</div>' +
+						'<div id="rlecheindex' + a + '" class="cuadro-leche derecha-leche click click">' +
+						'</div>' +
+						'<div id="clecheindex' + a + '" class="centro-leche click">' +
+						'</div>' +
+						'</div>';
+				}
+				a++;
+			}
+			$("#tr").append(replaceAll('index', '1', htmlRight));
+			$("#tl").append(replaceAll('index', '2', htmlLeft));
+			$("#tlr").append(replaceAll('index', '5', htmlLecheRight));
+			$("#tll").append(replaceAll('index', '6', htmlLecheLeft));
+
+
+			$("#bl").append(replaceAll('index', '3', htmlLeft));
+			$("#br").append(replaceAll('index', '4', htmlRight));
+			$("#bll").append(replaceAll('index', '7', htmlLecheLeft));
+			$("#blr").append(replaceAll('index', '8', htmlLecheRight));
+		}
+		var arrayPuente = [];
+		$(document).ready(function() {
+			
+			createOdontogram();
+			var data = !{data};
+			function setAllTeeths(string){
+				let object = JSON.parse(string);
+				let lengthObj = Object.keys(object).length;
+				console.log(object)
+				let teethsColors = {}
+				for(let i = 0;i<lengthObj; i++){
+					document.getElementById(object[i]["id"]).className = object[i]["class"]
+				}
+			}
+			if(data[0]["odontogram"]){
+				setAllTeeths(data[0]["odontogram"]);
+			}
+			$(".click").click(function(event) {
+				var control = $("#controls").children().find('.active').attr('id');
+				var cuadro = $(this).find("input[name=cuadro]:hidden").val();
+				console.log($(this).attr('id'))
+				switch (control) {
+					case "fractura":
+						if ($(this).hasClass("click-blue")) {
+							$(this).removeClass('click-blue');
+							$(this).addClass('click-red');
+						} else {
+							if ($(this).hasClass("click-red")) {
+								$(this).removeClass('click-red');
+							} else {
+								$(this).addClass('click-red');
+							}
+						}
+						break;
+					case "restauracion":
+						if ($(this).hasClass("click-red")) {
+							$(this).removeClass('click-red');
+							$(this).addClass('click-blue');
+						} else {
+							if ($(this).hasClass("click-blue")) {
+								$(this).removeClass('click-blue');
+							} else {
+								$(this).addClass('click-blue');
+							}
+						}
+						break;
+					case "extraccion":
+						var dientePosition = $(this).position();
+						console.log($(this))
+						console.log(dientePosition)
+						if($(this).hasClass("click-delete")){
+							$(this).parent().children().each(function(index, el) {
+								$(el).removeClass('click-delete');
+							});
+						}else{
+							$(this).parent().children().each(function(index, el) {
+								if ($(el).hasClass("click")) {
+									$(el).addClass('click-delete');
+								}else{
+									$(this).parent().children().each(function(index, el) {
+										$(el).removeClass('click-delete');
+									});
+								}
+							});
+						}
+						
+						break;
+					case "extraer":
+						var dientePosition = $(this).position();
+						console.log($(this))
+						console.log(dientePosition)
+						$(this).parent().children().each(function(index, el) {
+							if ($(el).hasClass("centro") || $(el).hasClass("centro-leche")) {
+								$(this).parent().append('<i style="color:red;" class="fa fa-times fa-3x fa-fw"></i>');
+								if ($(el).hasClass("centro")) {
+									//console.log($(this).parent().children("i"))
+									$(this).parent().children("i").css({
+										"position": "absolute",
+										"top": "24%",
+										"left": "18.58ex"
+									});
+								} else {
+									$(this).parent().children("i").css({
+										"position": "absolute",
+										"top": "21%",
+										"left": "1.2ex"
+									});
+								}
+								//
+							}
+						});
+						break;
+					case "puente":
+						var dientePosition = $(this).offset(), leftPX;
+						console.log($(this)[0].offsetLeft)
+						var noDiente = $(this).parent().children().first().text();
+						var cuadrante = $(this).parent().parent().attr('id');
+						var left = 0,
+							width = 0;
+						if (arrayPuente.length < 1) {
+							$(this).parent().children('.cuadro').css('border-color', 'red');
+							arrayPuente.push({
+								diente: noDiente,
+								cuadrante: cuadrante,
+								left: $(this)[0].offsetLeft,
+								father: null
+							});
+						} else {
+							$(this).parent().children('.cuadro').css('border-color', 'red');
+							arrayPuente.push({
+								diente: noDiente,
+								cuadrante: cuadrante,
+								left: $(this)[0].offsetLeft,
+								father: arrayPuente[0].diente
+							});
+							var diferencia = Math.abs((parseInt(arrayPuente[1].diente) - parseInt(arrayPuente[1].father)));
+							if (diferencia == 1) width = diferencia * 60;
+							else width = diferencia * 50;
+
+							if(arrayPuente[0].cuadrante == arrayPuente[1].cuadrante) {
+								if(arrayPuente[0].cuadrante == 'tr' || arrayPuente[0].cuadrante == 'tlr' || arrayPuente[0].cuadrante == 'br' || arrayPuente[0].cuadrante == 'blr') {
+									if (arrayPuente[0].diente > arrayPuente[1].diente) {
+										console.log(arrayPuente[0])
+										leftPX = (parseInt(arrayPuente[0].left)+10)+"px";
+									}else {
+										leftPX = (parseInt(arrayPuente[1].left)+10)+"px";
+										//leftPX = "45px";
+									}
+								}else {
+									if (arrayPuente[0].diente < arrayPuente[1].diente) {
+										leftPX = "-45px";
+									}else {
+										leftPX = "45px";
+									}
+								}
+							}
+							console.log(leftPX)
+							/*$(this).parent().append('<div style="z-index: 9999; height: 5px; width:' + width + 'px;" id="puente" class="click-red"></div>');
+							$(this).parent().children().last().css({
+								"position": "absolute",
+								"top": "80px",
+								"left": "50px"
+							});*/
+							$(this).parent().append('<div style="z-index: 9999; height: 5px; width:' + width + 'px;" id="puente" class="click-red"></div>');
+							$(this).parent().children().last().css({
+								"position": "absolute",
+								"top": "80px",
+								"left": leftPX
+							});
+						}
+
+						break;
+					default:
+						console.log("borrar case");
+				}
+				return false;
+			});
+			return false;
+		});
+		

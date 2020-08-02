@@ -1,0 +1,130 @@
+doctype html lang="en"
+head
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width,initial-scale=1")
+	meta(http-equiv="X-UA-Compatible" content="ie=edge")
+	title Edit user
+	link(rel="stylesheet", href="../../../../assets/css/normalize.css")
+	link(rel="stylesheet", href="../../../../assets/css/milligram.css")
+	link(rel="stylesheet", href="../../../../assets/fonts/css/nucleo.css")
+	link(rel="stylesheet", href="../../../../assets/css/headers.css")
+	link(rel="stylesheet", href="../../../../assets/css/styleA.css")
+	style.
+		span{
+			font-size:1.9rem;
+		}
+		input[type="text"]{
+			max-width: 200px;
+			border: 0px;
+			border-bottom-color: currentcolor;
+			border-bottom-style: none;
+			border-bottom-width: 0px;
+			border-bottom: 1px solid #606c76;
+			border-radius: 0;
+			padding: 0px;
+			padding-bottom: 0px;
+			height: 2.2rem;
+			font-size: 1.8rem;
+			margin-left: 7px;
+			padding-bottom: 5px;
+			margin-bottom: 5px;
+		}
+	include ../partials/navbar.pug
+	include ../partials/header.pug
+	main.main
+		section.container
+			.row
+				.column.column-50
+					h2 Info of #{data.firstname+" "+data.lastname}
+					form(action='/admin-8E4145/users/update/user/'+data._id, method='POST')
+						.container-field
+							span Name:
+							input(type="text" placeholder="Name" name="firstname" value=data.firstname)
+						.container-field
+							span Last name:
+							input(type="text" placeholder="Last name" name="lastname" value=data.lastname)
+						
+						.container-field
+							span Email:
+							input(type="text" placeholder="Email" name="email" value=data.email)
+						.container-field
+							span Gender:
+							select(name="gender")
+								if data.gender = "male"
+									option(value="male") Male
+									option(value="female") Female
+									option(value="other") Other
+									
+								else if  data.gender = "female"
+									option(value="female") Female
+									option(value="male") Male
+									option(value="other") Other
+								else 
+									option(value="other") Otro
+									option(value="female") Female
+									option(value="male") Other
+						.container-field
+							span Birthday:
+							input(type="text" placeholder="YYYY/MM/DD" name="birthday" value=data.birthday)
+						.container-field
+							span Number phone:
+							input(type="text" placeholder="Number phone" name="phone"  value=data.numberphone)
+							input(type="hidden" value="dentist" name="privileges")
+						.container-field
+							span Type your password:
+							input(type="text" placeholder="Password" name="password" value="")
+						
+						button(type="submit") Actualizar
+				.column.column-50
+					h2 Update password
+					.container-field
+						span Actual password:
+						input#currentPassword(type="password" placeholder="Actual password")
+					.container-field
+						span New password:
+						input#newPassword(type="password" placeholder="New password")
+					.container-field
+						span Confirm new password:
+						input#newPassword1(type="password" placeholder="Confirm new password")
+					span#alertPassword(style='display:none; color:red;')
+					button#changePassword Change password
+	
+	link(rel='stylesheet' href='../../../../assets/js/fullcalendar/sweetalert2.min.css')
+	script(type="text/javascript", src="../../../../assets/js/fullcalendar/sweetalert2.min.js")
+	script.
+		var thisHost = window.location.href.split('/').slice(0, 3).join('/');
+		let saveButton = document.getElementById("changePassword");
+		saveButton.addEventListener('click', function(){
+			let newpass1 = document.getElementById("newPassword").value;
+			let newpass2 = document.getElementById("newPassword1").value;
+			if(newpass1 === newpass2){
+				
+				fetch( thisHost+'/admin-8E4145/users/changepassword', {
+					method:'POST',
+					body: JSON.stringify({current: document.getElementById("currentPassword").value,newpass1: newpass1,newpass2: newpass2}),
+					headers:{
+						"Content-Type": "application/json"
+					}
+				})
+					.then( res => res.json() )
+					.then( item => {
+						Swal.fire({
+							icon:"success",
+							title:"Password change successfully",
+							timer:1000
+						});
+					})
+					.catch( err =>{
+						Swal.fire({
+							icon:"error",
+							title:"Password not changed",
+							texto:"Verify your passwords are correct",
+						});
+					})
+			}else{
+				document.getElementById("alertPassword").innerText='New password is not equal to the new confirm password';
+				document.getElementById("alertPassword").style.display='block';
+			}
+			
+		})
+	
